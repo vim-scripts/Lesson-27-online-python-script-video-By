@@ -1,0 +1,119 @@
+4 files in python make a tiled window
+https://www.youtube.com/watch?v=Rg_Adj-0J6M
+---------------------------------
+tileC.py
+---------------------------------
+import pygame, Funk
+
+class Tile(pygame.Rect):
+
+	List = []
+	width, height = 40, 40
+	total_tiles = 1
+
+	def __init__(self, x, y, Type):
+
+		self.type = Type
+		self.number = Tile.total_tiles
+		Tile.total_tiles += 1
+
+		if Type == 'empty':
+			self.walkable = True
+		else:
+			self.walkable = False
+
+		pygame.Rect.__init__(self, (x, y) , (Tile.width, Tile.height) )
+
+		Tile.List.append(self)
+
+	@staticmethod
+	def get_tile(number):
+		for tile in Tile.List:
+			if tile.number == number:
+				return tile
+
+	@staticmethod
+	def draw_tiles(screen):
+		for tile in Tile.List:
+
+			if not(tile.type == 'empty'):
+				pygame.draw.rect(screen, [40, 40, 40], tile )
+
+			Funk.text_to_screen(screen, tile.number, tile.x, tile.y)
+---------------------------------
+Main.py
+---------------------------------
+import pygame, sys, Funk
+from tileC import Tile
+
+pygame.init()
+pygame.font.init()
+
+invalids =   (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
+             19,37,55,73,91,109,127,145,163,181,
+             182,183,184,185,186,187,188,189,190,
+             191,192,193,194,195,196,197,198,
+             36,54,72,90,108,126,144,162,180,198)
+
+screen = pygame.display.set_mode((720, 440))
+
+for y in range(0, screen.get_height(), 40):
+	for x in range(0, screen.get_width(), 40):
+		if Tile.total_tiles in invalids:
+			Tile(x, y, 'solid')
+		else:
+			Tile(x, y, 'empty')
+			
+clock = pygame.time.Clock()
+FPS = 24
+total_frames = 0
+
+
+while True:
+    
+    for event in pygame.event.get():
+
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    Tile.draw_tiles(screen)
+    screen.blit(screen, (x, y))
+    pygame.display.flip()
+    clock.tick(FPS)
+    total_frames += 1
+---------------------------------
+Funk.py
+---------------------------------
+import pygame
+
+def text_to_screen(screen, text, x, y, size = 15,
+            color = (255, 255, 255), font_type = 'arialblack'):
+	try:
+		
+		text = str(text)
+		font = pygame.font.SysFont(font_type, size)
+		text = font.render(text, True, color)
+		screen.blit(text, (x, y))
+		
+	except Exception(e):
+		print ('SnazzyService')
+		raise e
+---------------------------------
+object_classes.py
+---------------------------------
+import pygame
+
+class Character(pygame.Rect):
+	width, height= 40, 40
+
+	def __init__(self, x, y):
+
+		pygame.Rect.__init__(self, x, y, Character.width, Character.height)
+
+	def get_number(self):
+
+		return ()
+
+	def get_tile(self):
+
+		return Tile.get_tile(self.get_number())
